@@ -90,11 +90,6 @@ class CartApi(APIView):
                 
         serializer = OutputCartSerializer(cart, context={"request": request})
         return Response(serializer.data)
-    
-    
-# apis.py
-
-# ... (همون Serializer ها)
 
 class CartItemApi(APIView):
     """API for adding items to cart"""
