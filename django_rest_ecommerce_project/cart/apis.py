@@ -1,3 +1,4 @@
+import stat
 from rest_framework.views import APIView 
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,7 +8,7 @@ from drf_spectacular.utils import extend_schema
 from django_rest_ecommerce_project.products.models import Product
 from django_rest_ecommerce_project.cart.selectors import get_cart_by_slug, get_cart_by_customer, get_cart_item_by_id
 from rest_framework import status
-from django_rest_ecommerce_project.cart.services import get_or_create_cart, add_item_to_cart, update_cart_item, remove_item_from_cart
+from django_rest_ecommerce_project.cart.services import get_or_create_cart, add_item_to_cart, update_cart_item, remove_item_from_cart, clear_cart
 from rest_framework.permissions import IsAuthenticated 
 from django_rest_ecommerce_project.users.selectors import get_profile
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -202,7 +203,31 @@ class CartItemDetailApi(APIView):
         
         return Response(status=status.HTTP_204_NO_CONTENT)
         
+class CartClearApi(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated] 
     
+    @extend_schema(responses={204:None})
+    def delete(self, request):
+        customer = get_profile(user=request.user)
+        
+        try:
+            cart = get_cart_by_customer(customer=customer)
+            if not cart:
+                return Response(
+                    {"error":"cart not found"}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            clear_cart(cart=cart) 
+        except Exception as ex:
+            return Response(
+                {"error": str(ex)}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return Response({"detail": "cart cleared succesfully"},status=status.HTTP_204_NO_CONTENT) 
+    
+        
     
         
         
