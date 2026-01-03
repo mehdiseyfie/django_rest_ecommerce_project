@@ -20,7 +20,7 @@ LOCAL_APPS = [
     'django_rest_ecommerce_project.authentication.apps.AuthenticationConfig',
     'django_rest_ecommerce_project.products.apps.ProductsConfig',
     'django_rest_ecommerce_project.cart.apps.CartConfig',
-    
+    'django_rest_ecommerce_project.orders.apps.OrdersConfig',
 ]
 
 THIRD_PARTY_APPS = [
