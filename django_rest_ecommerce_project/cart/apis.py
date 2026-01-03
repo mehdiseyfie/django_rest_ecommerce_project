@@ -1,4 +1,3 @@
-import stat
 from rest_framework.views import APIView 
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,7 +5,7 @@ from rest_framework import serializers
 from django_rest_ecommerce_project.cart.models import Cart, CartItem 
 from drf_spectacular.utils import extend_schema 
 from django_rest_ecommerce_project.products.models import Product
-from django_rest_ecommerce_project.cart.selectors import get_cart_by_slug, get_cart_by_customer, get_cart_item_by_id
+from django_rest_ecommerce_project.cart.selectors import get_cart_by_slug, get_cart_by_customer, get_cart_item_by_id, get_cart_totals
 from rest_framework import status
 from django_rest_ecommerce_project.cart.services import get_or_create_cart, add_item_to_cart, update_cart_item, remove_item_from_cart, clear_cart
 from rest_framework.permissions import IsAuthenticated 
@@ -225,8 +224,35 @@ class CartClearApi(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        return Response({"detail": "cart cleared succesfully"},status=status.HTTP_204_NO_CONTENT) 
+        return Response({"detail": "cart cleared succesfully"},status=status.HTTP_204_NO_CONTENT)
+
+class CartTotalsApi(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated] 
     
+    class OutputCartTotalSerializer(serializers.Serializer):
+        total_price = serializers.DecimalField(max_digits=10, 
+                                               decimal_places=2)
+        total_items = serializers.IntegerField() 
+        items_count = serializers.IntegerField() 
+        
+    
+    @extend_schema(responses=OutputCartTotalSerializer)
+    def get(self, request):
+        customer = get_profile(user=request.user) 
+        
+        try:
+            cart = get_cart_by_customer(customer=customer)
+            if not cart:
+                return Response({"total_price": 0.00,
+                                 "total_items":0,
+                                 "items_count":0})
+            totals = get_cart_totals(cart=cart) 
+        except Exception as ex:
+            return Response({"error": str(ex)}, 
+                            status=status.HTTP_400_BAD_REQUEST) 
+        return Response(totals) 
+        
         
     
         
