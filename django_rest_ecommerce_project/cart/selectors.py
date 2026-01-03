@@ -1,9 +1,8 @@
 from django_rest_ecommerce_project.cart.models import Cart, CartItem 
-from django_rest_ecommerce_project.users.models import Profile, BaseUser
-from django.db.models import QuerySet
+from django_rest_ecommerce_project.users.models import Profile
 from django.shortcuts import get_object_or_404
 from typing import Optional
-from django.core.cache import cache 
+from django.core.cache import cache
 
 
 def get_cart_by_slug(slug:str) -> Cart: 
