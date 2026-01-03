@@ -28,7 +28,34 @@ def get_cart_by_customer(customer:Profile) -> Optional[Cart]:
     except Cart.DoesNotExist:
         return None
         
- 
 
 def get_cart_item_by_id(cart:Cart, item_id:int) -> CartItem:
         return get_object_or_404(CartItem.objects.select_related("cart__customer__user"), cart=cart, id=item_id)
+    
+    
+    
+    
+
+def get_cart_totals(cart:Cart) -> dict:
+    
+    cache_key = f"cart_totals_{cart.slug}"
+    totals = cache.get(cache_key) 
+    
+    if totals is None: 
+        totals = {
+            "total_price": cart.total_price,
+            "total_items": cart.total_items,
+            "items_count": cart.cartitems.count() #type:ignore 
+        } 
+        cache.set(cache_key, totals, 300) 
+    return totals 
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
