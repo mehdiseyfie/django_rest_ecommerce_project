@@ -1,3 +1,4 @@
+from pickle import NONE
 from django_rest_ecommerce_project.users.models import Profile
 from django_rest_ecommerce_project.cart.models import Cart, CartItem 
 from django_rest_ecommerce_project.products.models import Product 
@@ -96,6 +97,17 @@ def remove_item_from_cart(cart_item:CartItem)->None:
     cache.delete(f"cart_totals_{cart_slug}")
     
     
+
+@transaction.atomic()
+def clear_cart(cart: Cart) ->None: 
+    
+    cart.cartitems.all().delete() #type:ignore 
+    cart.total_items = 0 
+    cart.total_price = Decimal("0.00")
+    cart.save()
+    
+    cache.delete(f"cart_{cart.slug}")
+    cache.delete(f"cart_total_{cart.slug}") 
     
     
     
