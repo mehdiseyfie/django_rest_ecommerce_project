@@ -160,7 +160,7 @@ class Order(BaseModel):
         return self.total_price + self.shipping_cost + self.tax_amount - self.discount_amount
 
     def __str__(self):
-        return f"Order {self.id} - {self.customer.user.email} - {self.status}"
+        return f"Order {self.id} - {self.customer.user.email} - {self.status}" #type:ignore
 
 class OrderItem(BaseModel):
     order = models.ForeignKey(
@@ -188,7 +188,7 @@ class OrderItem(BaseModel):
         return self.quantity * self.price
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} in Order {self.order.id}"
+        return f"{self.quantity} x {self.product.name} in Order {self.order.id}" #type:ignore
 
 class Discount(BaseModel):
     code = models.CharField(max_length=50, unique=True, verbose_name=_("Discount Code"))
@@ -263,7 +263,7 @@ class Payment(BaseModel):
             raise ValidationError("Completed payment requires order payment status to be paid.")
 
     def __str__(self):
-        return f"Payment {self.payment_id} for Order {self.order.id}"
+        return f"Payment {self.payment_id} for Order {self.order.id}" #type:ignore
 
 class ShippingAddress(BaseModel):
     customer = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="shipping_addresses", verbose_name=_("Customer"))
