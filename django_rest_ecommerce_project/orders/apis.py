@@ -1,5 +1,3 @@
-from django.forms import EmailField
-import phonenumber_field
 from rest_framework.views import APIView
 from rest_framework.response import Response 
 from django_rest_ecommerce_project.orders.models import (Order, OrderItem,
